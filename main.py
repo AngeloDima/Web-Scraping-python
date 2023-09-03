@@ -1,24 +1,27 @@
 import requests
 import bs4
 
-url = input("Inserisci il sito: ")  # Sito target
+url = "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1"
 res = requests.get(url)
 
 soup = bs4.BeautifulSoup(res.content, "html.parser")
-results = soup.findAll("div", class_="SmallCard-module_item-key-data__fcbjY")
+results = soup.findAll("div", class_="items__item item-card item-card--small")
 
-maxCount = 3
+maxResult = 2
 
 if results:
     with open("testo.txt", "a") as file:
         count = 0
         for result in results:
-            file.write(result.text + "\n" + "\n")  # Scrivi il testo su una nuova riga
-            # Limite risultati
+            file.write(result.text + "\n")
+
+            link = result.find("a")
+            if link:
+                href = link.get("href")
+                file.write("Link: " + href + "\n")
+            file.write("\n")
             count += 1
-            if count >= maxCount:
+            if count >= maxResult:
                 break
-
-
 else:
     print("Elemento non trovato")
