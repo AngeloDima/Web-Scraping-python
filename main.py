@@ -1,20 +1,17 @@
-import requests, bs4
+import requests
+import bs4
 
-url = input("Inserisci il sito: ")
+url = input("Inserisci il sito: ")  # Sito target
 res = requests.get(url)
 
-try:
-    res.raise_for_status()
-except Exception as exc:
-    print(f"si è verificato un problema: {exc}")
+soup = bs4.BeautifulSoup(res.content, "html.parser")
+results = soup.findAll(
+    "div", class_="SmallCard-module_item-key-data__fcbjY"
+)  # Correzione qui
 
-html_page = bs4.BeautifulSoup(res.text, "html.parser")
-
-elem_html = ".text"
-sel_elem = html_page.select(elem_html)
-
-text_elem = sel_elem[0].getText()
-with open("testo.txt", "w") as testo:
-    testo.write(text_elem)
-
-print("File testo aggiornato")
+if results:
+    with open("testo.txt", "a") as file:
+        for result in results:
+            file.write(result.text + "\n")  # Scrivi il testo su una nuova riga
+else:
+    print("Elemento non trovato")
