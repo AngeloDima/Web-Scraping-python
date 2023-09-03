@@ -1,27 +1,33 @@
 import requests
 import bs4
 
-url = "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1"
-res = requests.get(url)
+# Lista degli URL da visitare
+urls = [
+    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1",
+    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=2",
+    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=3",
+    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=4",
+    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=5",
+    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=6",
+]
 
-soup = bs4.BeautifulSoup(res.content, "html.parser")
-results = soup.findAll("div", class_="items__item item-card item-card--small")
+for url in urls:
+    res = requests.get(url)
 
-maxResult = 2
+    soup = bs4.BeautifulSoup(res.content, "html.parser")
+    results = soup.findAll("div", class_="items__item item-card item-card--small")
 
-if results:
-    with open("testo.txt", "a") as file:
-        count = 0
-        for result in results:
-            file.write(result.text + "\n")
+    if results:
+        with open("testo.txt", "a") as file:
+            for r in results:
+                file.write(r.text + "\n")
 
-            link = result.find("a")
-            if link:
-                href = link.get("href")
-                file.write("Link: " + href + "\n")
-            file.write("\n")
-            count += 1
-            if count >= maxResult:
-                break
-else:
-    print("Elemento non trovato")
+                link = r.find("a")
+                if link:
+                    href = link.get("href")
+                    file.write("Link: " + href + "\n")
+                    file.write("\n")
+    else:
+        print("ERRORE per l'URL:", url)
+
+print("Operazione completata.")
