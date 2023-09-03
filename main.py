@@ -1,20 +1,19 @@
 import requests
 import bs4
 
-# Lista degli URL da visitare
-urls = [
-    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1",
-    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=2",
-    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=3",
-    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=4",
-    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=5",
-    "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1&o=6",
-]
+# URL della prima pagina
+base_url = "https://www.subito.it/annunci-italia/vendita/moto-e-scooter/?q=yamaha+r1"
 
-for url in urls:
+# Variabile per tenere traccia delle pagine
+page = 1
+
+while True:
+    # Costruisci l'URL completo con il numero di pagina
+    url = f"{base_url}&o={page}"
+
     res = requests.get(url)
-
     soup = bs4.BeautifulSoup(res.content, "html.parser")
+
     results = soup.findAll("div", class_="items__item item-card item-card--small")
 
     if results:
@@ -28,6 +27,7 @@ for url in urls:
                     file.write("Link: " + href + "\n")
                     file.write("\n")
     else:
-        print("ERRORE per l'URL:", url)
+        print("Nessun risultato trovato su pagina", page)
+        break  # Esci dal ciclo se non ci sono più risultati
 
-print("Operazione completata.")
+    page += 1
